@@ -1,6 +1,7 @@
 #![allow(non_upper_case_globals)]
 
 mod creep;
+mod game_object;
 
 use std::cell::RefCell;
 
@@ -105,6 +106,7 @@ pub fn loop_inner() {
                 .find(|spawn| spawn.my() == Some(false))
                 .unwrap();
             let attacker = creep::Creep::from(attacker.clone());
+            log(&format!("x: {}, y: {}", attacker.x(), attacker.y()));
             attacker.moveTo(&enemy_spawn);
             attacker.attack(&enemy_spawn);
         } else {
