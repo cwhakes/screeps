@@ -1,5 +1,7 @@
 #![allow(non_upper_case_globals)]
 
+mod creep;
+
 use std::cell::RefCell;
 
 use wasm_bindgen::prelude::*;
@@ -47,25 +49,6 @@ mod spawn {
 
         #[wasm_bindgen(method)]
         pub fn spawnCreep(this: &StructureSpawn, body: Vec<JsString>) -> SpawnError;
-    }
-}
-
-mod creep {
-    use super::*;
-
-    #[wasm_bindgen(module = "game/prototypes")]
-    extern "C" {    
-        #[derive(Debug)]
-        pub type Creep;
-
-        #[wasm_bindgen(method, getter)]
-        pub fn my(this: &Creep) -> Option<bool>;
-
-        #[wasm_bindgen(method)]
-        pub fn attack(this: &Creep, target: &JsValue) -> JsValue;
-
-        #[wasm_bindgen(method)]
-        pub fn moveTo(this: &Creep, target: &JsValue) -> JsValue;
     }
 }
 
