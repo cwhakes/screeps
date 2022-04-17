@@ -19,16 +19,6 @@ extern "C" {
     fn get_creep() -> JsValue;
 }
 
-mod prototype {
-    use super::*;
-
-    #[wasm_bindgen(module = "game/prototypes")]
-    extern "C" {
-        pub static Creep: Object;
-        pub static StructureSpawn: Object;
-    }
-}
-
 #[wasm_bindgen]
 extern "C" {
     pub type SpawnError;
@@ -59,7 +49,7 @@ pub fn display(v: JsValue) {
 #[wasm_bindgen]
 pub fn count_creeps() {
     log("python works!");
-    let s = getObjectsByPrototype(&prototype::Creep);
+    let s = getObjectsByPrototype(creep::Creep::prototype());
     log(&format!("{:?}", s));
 }
 
@@ -68,13 +58,17 @@ pub fn add(a: i32, b: i32) -> i32 {
     a + b
 }
 
+trait Prototype {
+    fn prototype() -> &'static Object;
+}
+
 thread_local! {
     static ATTACKER: RefCell<Option<JsValue>> = RefCell::new(None);
 }
 
 #[wasm_bindgen]
 pub fn loop_inner() {
-    let spawn = getObjectsByPrototype(&prototype::StructureSpawn)
+    let spawn = getObjectsByPrototype(structure::StructureSpawn::prototype())
         .into_iter()
         .map(structure::StructureSpawn::from)
         .find(|spawn| spawn.my() == Some(true))
@@ -85,7 +79,7 @@ pub fn loop_inner() {
     ATTACKER.with(|attacker| {
         let mut maybe_attacker = attacker.borrow_mut();
         if let Some(attacker) = maybe_attacker.as_ref() {
-            let enemy_spawn = getObjectsByPrototype(&prototype::StructureSpawn)
+            let enemy_spawn = getObjectsByPrototype(structure::StructureSpawn::prototype())
                 .into_iter()
                 .map(structure::StructureSpawn::from)
                 .find(|spawn| spawn.my() == Some(false))
@@ -96,7 +90,7 @@ pub fn loop_inner() {
             attacker.moveTo(&enemy_spawn);
             attacker.attack(&enemy_spawn);
         } else {
-            let my_spawn = getObjectsByPrototype(&prototype::StructureSpawn)
+            let my_spawn = getObjectsByPrototype(structure::StructureSpawn::prototype())
                 .into_iter()
                 .map(structure::StructureSpawn::from)
                 .find(|spawn| spawn.my() == Some(true))
@@ -106,4 +100,3 @@ pub fn loop_inner() {
         }
     });
 }
-
