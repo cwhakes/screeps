@@ -1,15 +1,9 @@
 #![allow(non_upper_case_globals)]
 
-mod creep;
-mod game_object;
-mod structure;
-mod util;
-
-use creep::Creep;
+use screeps_api::creep::Creep;
+use screeps_api::structure::StructureSpawn;
 use std::cell::RefCell;
-use structure::StructureSpawn;
 
-use js_sys::{JsString, Object};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -18,20 +12,6 @@ extern "C" {
     #[wasm_bindgen(js_namespace = console)]
     fn log(s: &str);
     fn get_creep() -> JsValue;
-}
-
-#[wasm_bindgen]
-extern "C" {
-    pub type SpawnError;
-
-    #[wasm_bindgen(method, getter)]
-    pub fn object(this: &SpawnError) -> Creep;
-}
-
-#[wasm_bindgen(module = "game/constants")]
-extern "C" {
-    static ATTACK: JsString;
-    static MOVE: JsString;
 }
 
 #[wasm_bindgen]
@@ -47,17 +27,13 @@ pub fn display(v: JsValue) {
 #[wasm_bindgen]
 pub fn count_creeps() {
     log("python works!");
-    let s = util::get_objects_by_prototype::<creep::Creep>();
+    let s = screeps_api::util::get_objects_by_prototype::<Creep>();
     log(&format!("{:?}", s));
 }
 
 #[wasm_bindgen]
 pub fn add(a: i32, b: i32) -> i32 {
     a + b
-}
-
-pub trait Prototype {
-    fn prototype() -> &'static Object;
 }
 
 #[derive(Default)]
@@ -80,7 +56,7 @@ pub fn loop_inner() {
         } = *memory.borrow_mut();
 
         let enemy_spawn = enemy_spawn.get_or_insert_with(|| {
-            util::get_objects_by_prototype::<StructureSpawn>()
+            screeps_api::util::get_objects_by_prototype::<StructureSpawn>()
                 .into_iter()
                 .find(|spawn| spawn.my() == Some(false))
                 .unwrap()
@@ -90,11 +66,12 @@ pub fn loop_inner() {
             attacker.moveTo(&enemy_spawn);
             attacker.attack(&enemy_spawn);
         } else {
-            let my_spawn = util::get_objects_by_prototype::<StructureSpawn>()
+            let my_spawn = screeps_api::util::get_objects_by_prototype::<StructureSpawn>()
                 .into_iter()
                 .find(|spawn| spawn.my() == Some(true))
                 .unwrap();
-            let output = my_spawn.spawnCreep(vec![ATTACK.clone(), MOVE.clone()]);
+            let output =
+                my_spawn.spawnCreep(vec![screeps_api::ATTACK.clone(), screeps_api::MOVE.clone()]);
             *attacker = Some(output.object());
         }
     });

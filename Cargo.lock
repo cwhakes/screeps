@@ -74,7 +74,16 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "lazy_static",
+ "screeps-api",
  "serde",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "screeps-api"
+version = "0.1.0"
+dependencies = [
+ "js-sys",
  "wasm-bindgen",
 ]
 
