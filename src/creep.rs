@@ -11,8 +11,8 @@ extern "C" {
     pub fn my(this: &Creep) -> Option<bool>;
 
     #[wasm_bindgen(method)]
-    pub fn attack(this: &Creep, target: &JsValue) -> JsValue;
+    pub fn attack(this: &Creep, target: &GameObject) -> JsValue;
 
     #[wasm_bindgen(method)]
-    pub fn moveTo(this: &Creep, target: &JsValue) -> JsValue;
+    pub fn moveTo(this: &Creep, target: &GameObject) -> JsValue;
 }

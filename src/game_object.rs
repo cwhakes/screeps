@@ -4,10 +4,7 @@ use super::*;
 extern "C" {    
     #[derive(Debug)]
     pub type GameObject;
-
-    #[wasm_bindgen(method, getter)]
-    pub fn my(this: &GameObject) -> Option<bool>;
-
+    
     #[wasm_bindgen(method, getter)]
     pub fn exists(this: &GameObject) -> bool;
 
