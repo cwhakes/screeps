@@ -3,6 +3,7 @@
 mod creep;
 mod game_object;
 mod structure;
+mod util;
 
 use std::cell::RefCell;
 
@@ -11,8 +12,6 @@ use js_sys::{JsString, Object};
 
 #[wasm_bindgen]
 extern "C" {
-    #[wasm_bindgen(js_namespace = utils)]
-    fn getObjectsByPrototype(proto: &Object) -> Vec<JsValue>;
     fn test();
     #[wasm_bindgen(js_namespace = console)]
     fn log(s: &str);
@@ -49,7 +48,7 @@ pub fn display(v: JsValue) {
 #[wasm_bindgen]
 pub fn count_creeps() {
     log("python works!");
-    let s = getObjectsByPrototype(creep::Creep::prototype());
+    let s = util::get_objects_by_prototype::<creep::Creep>();
     log(&format!("{:?}", s));
 }
 
@@ -58,7 +57,7 @@ pub fn add(a: i32, b: i32) -> i32 {
     a + b
 }
 
-trait Prototype {
+pub trait Prototype {
     fn prototype() -> &'static Object;
 }
 
@@ -68,9 +67,8 @@ thread_local! {
 
 #[wasm_bindgen]
 pub fn loop_inner() {
-    let spawn = getObjectsByPrototype(structure::StructureSpawn::prototype())
+    let spawn = util::get_objects_by_prototype::<structure::StructureSpawn>()
         .into_iter()
-        .map(structure::StructureSpawn::from)
         .find(|spawn| spawn.my() == Some(true))
         .unwrap();
     log(&format!("{:?}", spawn));
@@ -79,9 +77,8 @@ pub fn loop_inner() {
     ATTACKER.with(|attacker| {
         let mut maybe_attacker = attacker.borrow_mut();
         if let Some(attacker) = maybe_attacker.as_ref() {
-            let enemy_spawn = getObjectsByPrototype(structure::StructureSpawn::prototype())
+            let enemy_spawn = util::get_objects_by_prototype::<structure::StructureSpawn>()
                 .into_iter()
-                .map(structure::StructureSpawn::from)
                 .find(|spawn| spawn.my() == Some(false))
                 .unwrap();
             let attacker = creep::Creep::from(attacker.clone());
@@ -90,9 +87,8 @@ pub fn loop_inner() {
             attacker.moveTo(&enemy_spawn);
             attacker.attack(&enemy_spawn);
         } else {
-            let my_spawn = getObjectsByPrototype(structure::StructureSpawn::prototype())
+            let my_spawn = util::get_objects_by_prototype::<structure::StructureSpawn>()
                 .into_iter()
-                .map(structure::StructureSpawn::from)
                 .find(|spawn| spawn.my() == Some(true))
                 .unwrap();
             let output = my_spawn.spawnCreep(vec![ATTACK.clone(), MOVE.clone()]);
