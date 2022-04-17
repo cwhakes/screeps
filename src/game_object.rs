@@ -1,7 +1,7 @@
 use super::*;
 
 #[wasm_bindgen(module = "game/prototypes")]
-extern "C" {    
+extern "C" {
     #[derive(Debug)]
     pub type GameObject;
 

@@ -1,8 +1,8 @@
-use super::*;
 use super::game_object::GameObject;
+use super::*;
 
 #[wasm_bindgen(module = "game/prototypes")]
-extern "C" {    
+extern "C" {
     #[wasm_bindgen(extends = GameObject)]
     #[derive(Debug)]
     pub type Creep;

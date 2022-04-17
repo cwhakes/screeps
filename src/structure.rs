@@ -1,5 +1,5 @@
-use super::*;
 use super::game_object::GameObject;
+use super::*;
 
 #[wasm_bindgen(module = "game/prototypes")]
 extern "C" {
@@ -12,7 +12,7 @@ extern "C" {
 
     #[wasm_bindgen(method, getter)]
     pub fn hits(this: &Structure) -> i32;
-    
+
     #[wasm_bindgen(method, getter, js_name = hitsMax)]
     pub fn hits_max(this: &Structure) -> i32;
 }
@@ -60,5 +60,3 @@ impl Prototype for StructureSpawn {
         &STRUCTURE_SPAWN_PROTOTYPE
     }
 }
-
-
